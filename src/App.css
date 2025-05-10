@@ -182,24 +182,20 @@ svg {
   background-color: white;
 }
 
-/* Ensure SVG maintains its aspect ratio */
 svg {
   preserveAspectRatio: xMidYMid meet;
 }
 
-/* Force visibility of all elements in export */
 svg * {
   visibility: visible !important;
   opacity: 1 !important;
 }
 
-/* Improve line rendering */
 line, polygon {
   vector-effect: non-scaling-stroke;
   shape-rendering: crispEdges;
 }
 
-/* Background handling */
 .svg-container {
   background-color: white !important;
 }

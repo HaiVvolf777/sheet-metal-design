@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 export default function FoldLineControls({
   sheet,
@@ -6,13 +6,13 @@ export default function FoldLineControls({
   addFoldLine,
   removeFoldLine,
   selectedFoldLine,
-  setSelectedFoldLine
+  setSelectedFoldLine,
 }) {
   const [newLine, setNewLine] = useState({
     position: 0,
-    direction: 'horizontal',
-    bendDirection: 'up'
-  })
+    direction: "horizontal",
+    bendDirection: "up",
+  });
 
   const handleAddLine = () => {
     addFoldLine({
@@ -20,15 +20,15 @@ export default function FoldLineControls({
       id: Date.now(),
       position: Math.min(
         Math.max(0, newLine.position),
-        newLine.direction === 'horizontal' ? sheet.height : sheet.width
-      )
-    })
+        newLine.direction === "horizontal" ? sheet.height : sheet.width
+      ),
+    });
     setNewLine({
       position: 0,
-      direction: 'horizontal',
-      bendDirection: 'up'
-    })
-  }
+      direction: "horizontal",
+      bendDirection: "up",
+    });
+  };
 
   return (
     <div className="control-panel">
@@ -38,7 +38,9 @@ export default function FoldLineControls({
           Direction:
           <select
             value={newLine.direction}
-            onChange={(e) => setNewLine({ ...newLine, direction: e.target.value })}
+            onChange={(e) =>
+              setNewLine({ ...newLine, direction: e.target.value })
+            }
           >
             <option value="horizontal">Horizontal</option>
             <option value="vertical">Vertical</option>
@@ -51,9 +53,16 @@ export default function FoldLineControls({
           <input
             type="number"
             value={newLine.position}
-            onChange={(e) => setNewLine({ ...newLine, position: parseInt(e.target.value) || 0 })}
+            onChange={(e) =>
+              setNewLine({
+                ...newLine,
+                position: parseInt(e.target.value) || 0,
+              })
+            }
             min="0"
-            max={newLine.direction === 'horizontal' ? sheet.height : sheet.width}
+            max={
+              newLine.direction === "horizontal" ? sheet.height : sheet.width
+            }
           />
         </label>
       </div>
@@ -62,7 +71,9 @@ export default function FoldLineControls({
           Bend Direction:
           <select
             value={newLine.bendDirection}
-            onChange={(e) => setNewLine({ ...newLine, bendDirection: e.target.value })}
+            onChange={(e) =>
+              setNewLine({ ...newLine, bendDirection: e.target.value })
+            }
           >
             <option value="up">Up</option>
             <option value="down">Down</option>
@@ -80,19 +91,21 @@ export default function FoldLineControls({
         ) : (
           <ul>
             {foldLines.map((line, index) => (
-              <li 
-                key={line.id} 
-                className={selectedFoldLine === index ? 'selected' : ''}
+              <li
+                key={line.id}
+                className={selectedFoldLine === index ? "selected" : ""}
                 onClick={() => setSelectedFoldLine(index)}
               >
                 {line.direction} at {line.position}mm ({line.bendDirection})
-                <button onClick={(e) => {
-                  e.stopPropagation()
-                  removeFoldLine(index)
-                  if (selectedFoldLine === index) {
-                    setSelectedFoldLine(null)
-                  }
-                }}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeFoldLine(index);
+                    if (selectedFoldLine === index) {
+                      setSelectedFoldLine(null);
+                    }
+                  }}
+                >
                   Remove
                 </button>
               </li>
@@ -101,5 +114,5 @@ export default function FoldLineControls({
         )}
       </div>
     </div>
-  )
+  );
 }

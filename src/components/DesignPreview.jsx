@@ -20,7 +20,6 @@ export default function DesignPreview({
   const [pan, setPan] = useState({ x: 0, y: 0 })
   const [startPos, setStartPos] = useState({ x: 0, y: 0 })
 
-  // Handle dragging fold lines
   const handleMouseDown = (e, index) => {
     if (e.button !== 0) return
     setSelectedFoldLine(index)
@@ -53,23 +52,11 @@ export default function DesignPreview({
     setDragging(false)
   }
 
-  // Handle panning
   const handlePanStart = (e) => {
     if (e.button !== 0 || dragging) return
     e.preventDefault()
     setStartPos({ x: e.clientX, y: e.clientY })
   }
-
-//   const handlePanMove = (e) => {
-//     if (dragging) return
-//     e.preventDefault()
-    
-//     setPan(prev => ({
-//       x: prev.x + (e.clientX - startPos.x),
-//       y: prev.y + (e.clientY - startPos.y)
-//     }))
-//     setStartPos({ x: e.clientX, y: e.clientY })
-//   }
 
   const handleWheel = (e) => {
     e.preventDefault()
@@ -77,49 +64,38 @@ export default function DesignPreview({
     setZoom(prev => Math.min(Math.max(0.5, prev * delta), 3))
   }
 
-  // Export as PNG
-// Export as PNG - Fixed version
-// Export as PNG - Final working version
+
 const exportAsPng = async () => {
     prepareSvgForExport();
     if (!svgRef.current) return;
   
     try {
-      // Create a canvas element
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
-      // Set canvas dimensions (scaled up for better quality)
-      const scale = 3; // Increase for higher quality
+      const scale = 3;
       canvas.width = sheet.width * scale;
       canvas.height = sheet.height * scale;
       
-      // Fill background
       ctx.fillStyle = 'white';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Serialize SVG to XML
       const svgData = new XMLSerializer().serializeToString(svgRef.current);
       const img = new Image();
       
-      // Create blob URL for the SVG
       const svgBlob = new Blob([svgData], {type: 'image/svg+xml'});
       const url = URL.createObjectURL(svgBlob);
       
       img.onload = () => {
-        // Draw the SVG onto canvas
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         
-        // Convert canvas to PNG
         const pngUrl = canvas.toDataURL('image/png');
         
-        // Create download link
         const link = document.createElement('a');
         link.download = `sheet-metal-design-${Date.now()}.png`;
         link.href = pngUrl;
         link.click();
         
-        // Clean up
         URL.revokeObjectURL(url);
       };
       
@@ -137,7 +113,6 @@ const exportAsPng = async () => {
 
   const exportAsDxf = () => {
     try {
-      // Enhanced validation
       if (!sheet || typeof sheet.width !== 'number' || typeof sheet.height !== 'number') {
         throw new Error("Invalid sheet dimensions");
       }
@@ -146,7 +121,6 @@ const exportAsPng = async () => {
         throw new Error("Fold lines data is not valid");
       }
   
-      // Filter out invalid fold lines
       const validFoldLines = foldLines.filter(line => 
         line && 
         typeof line.position === 'number' && 
@@ -155,7 +129,6 @@ const exportAsPng = async () => {
   
       const dxfContent = exportToDXF(sheet, validFoldLines);
       
-      // Create download with proper MIME type
       const blob = new Blob([dxfContent], { type: 'application/dxf' });
       const url = URL.createObjectURL(blob);
       
@@ -167,7 +140,6 @@ const exportAsPng = async () => {
       document.body.appendChild(link);
       link.click();
       
-      // Clean up after a delay to ensure download starts
       setTimeout(() => {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
@@ -182,14 +154,12 @@ const exportAsPng = async () => {
   const prepareSvgForExport = () => {
     if (!svgRef.current) return;
     
-    // Make all elements visible
     const elements = svgRef.current.querySelectorAll('*');
     elements.forEach(el => {
       el.style.visibility = 'visible';
       el.style.opacity = '1';
     });
     
-    // Force show all bend direction indicators
     const polygons = svgRef.current.querySelectorAll('polygon');
     polygons.forEach(poly => {
       poly.style.visibility = 'visible';
@@ -279,7 +249,6 @@ const exportAsPng = async () => {
             }}
             preserveAspectRatio="xMidYMid meet"
           >
-            {/* Sheet */}
             <rect
               x="0"
               y="0"
@@ -290,7 +259,6 @@ const exportAsPng = async () => {
               strokeWidth="1"
             />
             
-            {/* Fold lines */}
             {foldLines.map((line, index) => {
               const isSelected = index === selectedFoldLine
               const strokeColor = isSelected ? '#ff5722' : '#3f51b5'
@@ -312,7 +280,6 @@ const exportAsPng = async () => {
                       strokeWidth={strokeWidth}
                       strokeDasharray={isSelected ? '0' : '5,5'}
                     />
-                    {/* Bend direction indicator */}
                     <polygon
                       points={`
                         ${sheet.width - 15},${line.position - 5}
@@ -349,7 +316,6 @@ const exportAsPng = async () => {
                       strokeWidth={strokeWidth}
                       strokeDasharray={isSelected ? '0' : '5,5'}
                     />
-                    {/* Bend direction indicator */}
                     <polygon
                       points={`
                         ${line.position - 5},15
